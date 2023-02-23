@@ -2,6 +2,24 @@ import java.util.ArrayList;
 
 public class Quadtree {
 
+    private Quadtree TR;
+    private Quadtree TL;
+    private Quadtree BL;
+    private Quadtree BR;
+    private Rectangle boundary;
+    private int capacity;
+    private ArrayList<Point> points;
+    private boolean divided;
+    private int radius;
+
+    public Quadtree(Rectangle boundary, int capacity) {
+        this.boundary = boundary;
+        this.capacity = capacity;
+        this.points = new ArrayList<>(4);
+        this.divided = false;
+        this.radius = 10;
+    }
+
     public Quadtree getTR() {
         return TR;
     }
@@ -18,39 +36,20 @@ public class Quadtree {
         return BR;
     }
 
-    private Quadtree TR;
-    private Quadtree TL;
-    private Quadtree BL;
-    private Quadtree BR;
-
-    public Rectangle getBoundary() {
-        return boundary;
+    public int getCapacity() {
+        return capacity;
     }
-
-    private Rectangle boundary;
-    private int capacity;
-
-    public ArrayList<Point> getPoints() {
-        return points;
-    }
-
-    private ArrayList<Point> points;
 
     public boolean isDivided() {
         return divided;
     }
 
-    private boolean divided;
-
-    public int getCapacity() {
-        return capacity;
+    public ArrayList<Point> getPoints() {
+        return points;
     }
 
-    public Quadtree(Rectangle boundary, int capacity) {
-        this.boundary = boundary;
-        this.capacity = capacity;
-        this.points = new ArrayList<>(4);
-        this.divided = false;
+    public Rectangle getBoundary() {
+        return boundary;
     }
 
     public void insert(Point point) {
@@ -76,10 +75,8 @@ public class Quadtree {
             return null;
         }
         for (Point point : points) {
-            double x = point.x;
-            double y = point.y;
             if (!point.equals(first)) {
-                if (range.contains(new Point(x, y)) || range.contains(new Point(x, y + 10)) || range.contains(new Point(x + 10, y + 10)) || range.contains(new Point(x + 10, y))) {
+                if (range.contains(new Point(point.x, point.y)) || range.contains(new Point(point.x, point.y + radius)) || range.contains(new Point(point.x + radius, point.y + radius)) || range.contains(new Point(point.x + radius, point.y))) {
                     return point;
                 }
             }

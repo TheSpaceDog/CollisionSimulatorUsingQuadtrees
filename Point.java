@@ -19,8 +19,8 @@ public class Point {
     public Point(double x, double y, double dx, double dy, Color color) {
         this.x = x;
         this.y = y;
-        this.dx = dx*2;
-        this.dy = dy*2;
+        this.dx = dx;
+        this.dy = dy;
         this.collided = false;
         this.color = color;
     }

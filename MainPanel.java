@@ -8,11 +8,12 @@ public class MainPanel extends JPanel {
 
     private Quadtree qtree;
     private ArrayList<Point> points;
-    private int radius = 10;
+    private int radius;
 
     public MainPanel(Quadtree qtree, ArrayList<Point> points) {
         this.qtree = qtree;
         this.points = points;
+        this.radius = 10;
     }
 
     @Override
@@ -42,7 +43,6 @@ public class MainPanel extends JPanel {
                 }
             }
         }
-
         // do collisions
         for (Point point : points) {
             // radius = 10
@@ -51,36 +51,31 @@ public class MainPanel extends JPanel {
             // resolve collision between point and collider
             if (collider != null) {
                 if (!point.collided && !collider.collided) {
-                    Point p1 = point;
-                    Point p2 = collider;
-                    double oldDx = p1.dx;
-                    p1.dx = p2.dx;
-                    p2.dx = oldDx;
-                    double oldDy = p1.dy;
-                    p1.dy = p2.dy;
-                    p2.dy = oldDy;
-                    while (range.contains(p2)) {
-                        p2.x += p2.dx;
-                        p2.y += p2.dy;
-                        System.out.println("correcting?");
+                    double oldDx = point.dx;
+                    point.dx = collider.dx;
+                    collider.dx = oldDx;
+                    double oldDy = point.dy;
+                    point.dy = collider.dy;
+                    collider.dy = oldDy;
+                    while (range.contains(collider)) {
+                        point.x += point.dx;
+                        point.y += point.dy;
+                        collider.x += collider.dx;
+                        collider.y += collider.dy;
                     }
                     point.collided = true;
                     collider.collided = true;
                 }
             }
         }
-
         // remake quadtree
         qtree = new Quadtree(qtree.getBoundary(), qtree.getCapacity());
         for (Point point : points) {
             qtree.insert(point);
         }
-
+        // Draw quadtree
         Graphics2D g2 = (Graphics2D) g;
-        // g2.setColor(Color.BLACK);
-        // g2.fillRect((int) qtree.getBoundary().x, (int) qtree.getBoundary().y, (int) qtree.getBoundary().w, (int) qtree.getBoundary().h);
         drawTree(g2, qtree);
-
         while ((System.currentTimeMillis()-start)/1000.0 < 1.0/60) {
             try {
                 Thread.sleep(0);
@@ -101,13 +96,13 @@ public class MainPanel extends JPanel {
         g2.fillRect(x, y, w, h);
         g2.setColor(Color.white);
         g2.drawRect(x, y, w, h);
+        g2.setStroke(new BasicStroke(2));
         if (qtree.isDivided()) {
             drawTree(g2, qtree.getTR());
             drawTree(g2, qtree.getTL());
             drawTree(g2, qtree.getBR());
             drawTree(g2, qtree.getBL());
         }
-        g2.setStroke(new BasicStroke(2));
         for (Point point : qtree.getPoints()) {
             g2.setColor(point.color);
             g2.fillRect((int) point.x, (int) point.y, radius, radius);
